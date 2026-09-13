@@ -1,6 +1,7 @@
 # 💚 Growing City Greens '26 — fund-the-need app
 
 Repository: https://github.com/konstantinbrazhnik/citygreens-fundraiser-2026
+Live: https://city-greens-fundraiser.juris-pbc.workers.dev
 
 A one-link donation PWA for City Greens Market's 2026 fundraiser
 (Tuesday, September 22, 2026 · Contemporary Art Museum St. Louis), built to be
@@ -61,8 +62,11 @@ shows a "Test mode" banner). It is what the tests and a rehearsal use. Set
 
 ## Deploying to Cloudflare
 
-One-time, from a machine logged in to the City Greens Cloudflare account
-(`npx wrangler login`, or `CLOUDFLARE_API_TOKEN` with Workers + D1 edit scopes):
+The Worker is deployed at https://city-greens-fundraiser.juris-pbc.workers.dev
+with the D1 database and `ADMIN_KEY` already in place; the `SQUARE_*` secrets
+are still to be set. The one-time setup, from a machine logged in to the
+Cloudflare account (`npx wrangler login`, or `CLOUDFLARE_API_TOKEN` with
+Workers + D1 edit scopes), was:
 
 ```bash
 npx wrangler d1 create city-greens-fundraiser
