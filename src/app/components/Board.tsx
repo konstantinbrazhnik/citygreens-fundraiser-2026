@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { milestoneCrossed, percent } from '@shared/board';
 import { EVENT } from '@shared/campaign';
@@ -17,9 +17,15 @@ interface Celebration {
 
 type ShownCelebration = Celebration & { ms: number };
 
+/** Most gifts the feed will lay out; how many actually show is whatever fits above the fold. */
+const FEED_MAX = 12;
+
 /**
  * The projector. Everything is sized in viewport units so it fills a wall
  * from a laptop's HDMI port with no fiddling, and the cursor hides itself.
+ * The page is exactly one screen tall and never scrolls: a projection has
+ * nobody at the keyboard, so the feed clips instead of pushing the QR code
+ * off the bottom.
  */
 export function Board({ live }: { live: LiveBoard }) {
   const s = live.snapshot;
@@ -97,6 +103,51 @@ export function Board({ live }: { live: LiveBoard }) {
     };
   }, []);
 
+  /*
+   * The QR code is as big as the column allows and no bigger: its width is
+   * the column's height minus the caption, capped by the column's width. A
+   * projection has nobody to scroll, so nothing may fall off the bottom.
+   */
+  const asideRef = useRef<HTMLElement>(null);
+  const captionRef = useRef<HTMLDivElement>(null);
+  const [qrSize, setQrSize] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const aside = asideRef.current;
+    const caption = captionRef.current;
+    if (!aside || !caption) return;
+    const fit = () => {
+      const free = aside.clientHeight - caption.offsetHeight;
+      setQrSize(Math.round(Math.max(160, Math.min(free, window.innerWidth * 0.26, 440))));
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(aside);
+    ro.observe(caption);
+    return () => ro.disconnect();
+  }, []);
+
+  /* Same rule for the feed: count the cards whose bottom edge is inside the list, hide the rest. */
+  const feedRef = useRef<HTMLUListElement>(null);
+  const [feedShown, setFeedShown] = useState(FEED_MAX);
+  const recent = s?.recent;
+  useLayoutEffect(() => {
+    const ul = feedRef.current;
+    if (!ul) return;
+    const fit = () => {
+      const edge = ul.getBoundingClientRect().bottom + 1;
+      let n = 0;
+      for (const li of ul.children) {
+        if (li.getBoundingClientRect().bottom <= edge) n++;
+        else break;
+      }
+      setFeedShown(Math.max(2, n));
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(ul);
+    return () => ro.disconnect();
+  }, [recent]);
+
   const fullscreen = () => {
     const el = document.documentElement;
     if (document.fullscreenElement) void document.exitFullscreen();
@@ -106,13 +157,13 @@ export function Board({ live }: { live: LiveBoard }) {
   const pct = s ? percent(s.raisedCents, s.goalCents) : 0;
 
   return (
-    <main className={`deco-bg relative flex min-h-dvh flex-col overflow-hidden ${idle ? 'board-cursor-hidden' : ''}`} data-testid="board">
+    <main className={`deco-bg relative flex h-dvh max-h-dvh flex-col overflow-hidden ${idle ? 'board-cursor-hidden' : ''}`} data-testid="board">
       <Sunburst className="pointer-events-none absolute -left-8 -top-8 h-[26vw] w-[26vw] opacity-60" flip />
       <Sunburst className="pointer-events-none absolute -bottom-10 -right-10 h-[26vw] w-[26vw] rotate-180 opacity-60" />
       <Fan className="pointer-events-none absolute right-0 top-0 h-full w-[14vw] opacity-90" />
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between px-[4vw] pt-[2.5vh]">
+      <header className="relative z-10 flex shrink-0 items-center justify-between px-[4vw] pt-[2.5vh]">
         <div>
           <p className="text-[clamp(1rem,1.8vw,1.8rem)] font-extrabold uppercase tracking-[0.25em] text-gold">{EVENT.dateLabel}</p>
           <h1 className="font-display text-[clamp(2.2rem,6vw,6rem)] leading-none gold-text">
@@ -130,8 +181,8 @@ export function Board({ live }: { live: LiveBoard }) {
       </header>
 
       {/* Body */}
-      <div className="relative z-10 grid flex-1 grid-cols-[1fr_auto] gap-[3vw] px-[4vw] pb-[3vh] pt-[3vh]" style={{ paddingRight: 'calc(4vw + 14vw)' }}>
-        <div className="flex min-w-0 flex-col">
+      <div className="relative z-10 grid min-h-0 flex-1 grid-cols-[1fr_auto] gap-[3vw] px-[4vw] pb-[3vh] pt-[3vh]" style={{ paddingRight: 'calc(4vw + 14vw)' }}>
+        <div className="flex min-h-0 min-w-0 flex-col">
           {!s && <p className="text-[3vw] font-black text-cream/70">{live.offline ? 'Reconnecting…' : 'Warming up the board…'}</p>}
           {s?.showTotal && (
             <>
@@ -144,19 +195,20 @@ export function Board({ live }: { live: LiveBoard }) {
             </>
           )}
 
-          {/* Feed */}
-          <ul className="mt-[3vh] grid flex-1 auto-rows-min grid-cols-2 gap-[1.2vw] overflow-hidden" aria-label="Recent gifts">
-            {(s?.recent ?? []).slice(0, 12).map((d, i) => (
+          {/* Feed: whole cards only. Anything that would be cut by the bottom edge is hidden, not half-shown. */}
+          <ul ref={feedRef} className="mt-[3vh] grid min-h-0 flex-1 auto-rows-min grid-cols-2 content-start gap-[1.2vw] overflow-hidden" aria-label="Recent gifts">
+            {(s?.recent ?? []).slice(0, FEED_MAX).map((d, i) => (
               <li
                 key={d.id}
                 className={`anim-slide-in flex items-center justify-between gap-3 rounded-[1.2vw] px-[1.4vw] py-[1.2vh] ring-2 ${
                   i === 0 ? 'bg-gold text-ink ring-cream' : 'bg-cream/10 text-cream ring-gold/30'
-                }`}
+                } ${i >= feedShown ? 'invisible' : ''}`}
                 style={{ animationDelay: `${Math.min(i, 6) * 40}ms` }}
+                aria-hidden={i >= feedShown || undefined}
               >
                 <span className="min-w-0">
-                  <span className="line-clamp-2 block text-[clamp(1.1rem,1.9vw,2.2rem)] font-black leading-tight">{displayName(d)}</span>
-                  {d.message && <span className={`line-clamp-2 block text-[clamp(0.95rem,1.3vw,1.5rem)] font-semibold ${i === 0 ? 'text-ink/80' : 'text-cream/80'}`}>“{d.message}”</span>}
+                  <span className="line-clamp-2 text-[clamp(1.1rem,1.9vw,2.2rem)] font-black leading-tight">{displayName(d)}</span>
+                  {d.message && <span className={`line-clamp-2 text-[clamp(0.95rem,1.3vw,1.5rem)] font-semibold ${i === 0 ? 'text-ink/80' : 'text-cream/80'}`}>“{d.message}”</span>}
                 </span>
                 <span className={`shrink-0 text-[clamp(1.2rem,2.2vw,2.6rem)] font-black ${i === 0 ? 'text-forest-deep' : 'text-gold'}`}>{formatMoney(d.amountCents)}</span>
               </li>
@@ -168,20 +220,22 @@ export function Board({ live }: { live: LiveBoard }) {
         </div>
 
         {/* QR */}
-        <aside className="flex w-[clamp(220px,26vw,440px)] flex-col items-center justify-start">
-          <div className="w-full rounded-[1.6vw] bg-cream p-[1vw] shadow-2xl ring-8 ring-gold">
+        <aside ref={asideRef} className="flex min-h-0 w-[clamp(180px,26vw,440px)] flex-col items-center justify-start overflow-hidden" style={qrSize ? { width: qrSize } : undefined}>
+          <div className="w-full shrink-0 rounded-[1.6vw] bg-cream p-[1vw] shadow-2xl ring-8 ring-gold">
             {qr ? <img src={qr} alt={`QR code for ${giveUrl}`} className="block w-full" /> : <div className="aspect-square w-full" />}
           </div>
-          <p className="mt-[1.5vh] text-center text-[clamp(1.3rem,2.4vw,2.6rem)] font-black leading-tight">Scan to give</p>
-          <p className="mt-[0.5vh] text-center text-[clamp(0.9rem,1.3vw,1.4rem)] font-bold text-gold break-all">{giveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}</p>
-          {s?.showTotal && (
-            <p className="mt-[2vh] text-center text-[clamp(1rem,1.5vw,1.6rem)] font-bold text-cream/80">
-              {pct >= 100 ? 'We did it! 🎉' : `${formatMoney(Math.max(0, s.goalCents - s.raisedCents))} to go`}
-            </p>
-          )}
-          <span className={`mt-[1vh] inline-flex items-center gap-2 rounded-full bg-cream/10 px-3 py-1 text-[clamp(0.85rem,1vw,1.1rem)] font-extrabold uppercase tracking-widest ${live.connected ? 'text-lime' : 'text-cream/50'}`}>
-            <span className={`h-2.5 w-2.5 rounded-full ${live.connected ? 'bg-lime' : 'bg-cream/40'}`} /> {live.connected ? 'Live' : 'Reconnecting'}
-          </span>
+          <div ref={captionRef} className="flex w-full flex-col items-center pt-[1.5vh]">
+            <p className="text-center text-[clamp(1.3rem,2.4vw,2.6rem)] font-black leading-tight">Scan to give</p>
+            <p className="mt-[0.5vh] text-center text-[clamp(0.9rem,1.3vw,1.4rem)] font-bold text-gold break-all">{giveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}</p>
+            {s?.showTotal && (
+              <p className="mt-[2vh] text-center text-[clamp(1rem,1.5vw,1.6rem)] font-bold text-cream/80">
+                {pct >= 100 ? 'We did it! 🎉' : `${formatMoney(Math.max(0, s.goalCents - s.raisedCents))} to go`}
+              </p>
+            )}
+            <span className={`mt-[1vh] inline-flex items-center gap-2 rounded-full bg-cream/10 px-3 py-1 text-[clamp(0.85rem,1vw,1.1rem)] font-extrabold uppercase tracking-widest ${live.connected ? 'text-lime' : 'text-cream/50'}`}>
+              <span className={`h-2.5 w-2.5 rounded-full ${live.connected ? 'bg-lime' : 'bg-cream/40'}`} /> {live.connected ? 'Live' : 'Reconnecting'}
+            </span>
+          </div>
         </aside>
       </div>
 

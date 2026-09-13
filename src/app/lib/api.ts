@@ -1,6 +1,7 @@
 import type { BoardSettings, BoardSnapshot } from '@shared/board';
 import type { EVENT, ORG } from '@shared/campaign';
 import type { PublicDonation } from '@shared/donations';
+import type { PushSubscriptionJSON } from '@shared/push';
 
 export interface AppConfig {
   environment: string;
@@ -92,6 +93,25 @@ export const adminSubscribers = (key: string) =>
     '/api/admin/subscribers',
     { headers: adminHeaders(key) },
   );
+
+export interface AdminPushState {
+  enabled: boolean;
+  publicKey: string | null;
+  devices: number;
+}
+export interface PushReport {
+  sent: number;
+  failed: number;
+  dropped: number;
+}
+export const adminPush = (key: string) => request<AdminPushState>('/api/admin/push', { headers: adminHeaders(key) });
+export const adminPushSubscribe = (key: string, subscription: PushSubscriptionJSON, label: string | null) =>
+  request<{ ok: true; devices: number }>('/api/admin/push/subscriptions', json({ subscription, label }, adminHeaders(key)));
+export const adminPushUnsubscribe = (key: string, endpoint: string) =>
+  request<{ ok: true; devices: number }>('/api/admin/push/subscriptions', { ...json({ endpoint }, adminHeaders(key)), method: 'DELETE' });
+export const adminPushTest = (key: string) => request<PushReport>('/api/admin/push/test', { method: 'POST', headers: adminHeaders(key) });
+/** The organizer desk's own web app manifest: its start_url carries the key so a Home Screen install opens signed in. */
+export const adminManifestUrl = (key: string) => `/api/admin/manifest.webmanifest?key=${encodeURIComponent(key)}`;
 
 export interface AdminDonation {
   id: string;

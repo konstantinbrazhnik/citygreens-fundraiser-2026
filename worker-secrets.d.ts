@@ -6,4 +6,6 @@ interface Env {
   SQUARE_APPLICATION_ID?: string;
   SQUARE_LOCATION_ID?: string;
   ADMIN_KEY?: string;
+  /** VAPID private key (JWK `d`, base64url) that pairs with the VAPID_PUBLIC_KEY var. */
+  VAPID_PRIVATE_KEY?: string;
 }

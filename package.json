@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "repository": { "type": "git", "url": "git+https://github.com/konstantinbrazhnik/citygreens-fundraiser-2026.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/konstantinbrazhnik/citygreens-fundraiser-2026.git"
+  },
   "description": "Growing City Greens '26 — fund-the-need donation PWA with a live projector board. Cloudflare Workers + D1 + Durable Objects + Square.",
   "scripts": {
     "dev": "npm run build:app && wrangler dev",
@@ -19,6 +22,7 @@
     "deploy": "npm install --no-fund --no-audit && npm run build && npm run migrate:prod && wrangler deploy"
   },
   "dependencies": {
+    "@block65/webcrypto-web-push": "^2.0.0",
     "canvas-confetti": "^1.9.3",
     "hono": "^4.13.1",
     "qrcode": "^1.5.4",

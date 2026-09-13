@@ -21,7 +21,9 @@ import {
 } from '../../shared/donations';
 import type { BoardMessage } from '../../shared/messages';
 import { parseSubscribeRequest } from '../../shared/newsletter';
+import { MAX_LABEL, noticeForDonation, parsePushSubscription, testNotice } from '../../shared/push';
 import { subscribeToMailchimp } from './mailchimp';
+import { notifyOrganizers, pushConfigured } from './push';
 import { createSquarePayment, squareConfigured, SquareError } from './square';
 
 export { DonationBoard } from './board';
@@ -112,6 +114,12 @@ async function broadcast(env: Env, message: BoardMessage): Promise<void> {
     // A gift is recorded even if the megaphone hiccups; the board catches up on its next snapshot.
     console.error('broadcast failed', err);
   }
+}
+
+/** A new gift: every open screen hears it, and every organizer's phone buzzes. */
+function announce(c: Context<{ Bindings: Env }>, pub: PublicDonation): void {
+  c.executionCtx.waitUntil(broadcast(c.env, { type: 'donation.new', payload: pub, ts: Date.now() }));
+  c.executionCtx.waitUntil(notifyOrganizers(c.env, noticeForDonation(pub)).catch((err) => console.error('push fan-out failed', err)));
 }
 
 function noStore(c: Context) {
@@ -235,7 +243,7 @@ app.post('/api/donations', async (c) => {
   const row = await env.DB.prepare('SELECT * FROM donations WHERE id = ?').bind(d.id).first<DonationRow>();
   if (!row) return c.json({ error: 'The gift was charged but could not be recorded. Please show this screen to a volunteer.' }, 500);
   const pub = toPublic(row);
-  c.executionCtx.waitUntil(broadcast(env, { type: 'donation.new', payload: pub, ts: Date.now() }));
+  announce(c, pub);
   return c.json({ donation: pub, receiptUrl: row.receipt_url }, 201);
 });
 
@@ -318,7 +326,7 @@ admin.post('/donations', async (c) => {
     .run();
   const row = await c.env.DB.prepare('SELECT * FROM donations WHERE id = ?').bind(id).first<DonationRow>();
   const pub = toPublic(row!);
-  c.executionCtx.waitUntil(broadcast(c.env, { type: 'donation.new', payload: pub, ts: Date.now() }));
+  announce(c, pub);
   return c.json({ donation: pub }, 201);
 });
 
@@ -351,6 +359,87 @@ admin.put('/settings', async (c) => {
 admin.get('/subscribers', async (c) => {
   const { results } = await c.env.DB.prepare('SELECT * FROM subscribers ORDER BY created_at DESC LIMIT 1000').all();
   return c.json({ subscribers: results });
+});
+
+/* ── push notifications for organizers ─────────────────────────────── */
+
+admin.get('/push', async (c) => {
+  const enabled = pushConfigured(c.env);
+  const row = await c.env.DB.prepare('SELECT COUNT(*) AS n FROM push_subscriptions').first<{ n: number }>();
+  return c.json({ enabled, publicKey: enabled ? c.env.VAPID_PUBLIC_KEY : null, devices: row?.n ?? 0 });
+});
+
+/** A phone that just called PushManager.subscribe() registers here. Upsert on the endpoint. */
+admin.post('/push/subscriptions', async (c) => {
+  if (!pushConfigured(c.env)) return c.json({ error: 'Push is not set up: set the VAPID keys.' }, 503);
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: 'Malformed request.' }, 400);
+  }
+  const b = (body ?? {}) as Record<string, unknown>;
+  const parsed = parsePushSubscription(b.subscription);
+  if (!parsed.ok) return c.json({ error: parsed.error }, 400);
+  const sub = parsed.value;
+  const label = cleanText(b.label, MAX_LABEL);
+  await c.env.DB.prepare(
+    `INSERT INTO push_subscriptions (id, endpoint, p256dh, auth, label) VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(endpoint) DO UPDATE SET p256dh = excluded.p256dh, auth = excluded.auth, label = COALESCE(excluded.label, label), last_error = NULL`,
+  )
+    .bind(crypto.randomUUID(), sub.endpoint, sub.keys.p256dh, sub.keys.auth, label)
+    .run();
+  const row = await c.env.DB.prepare('SELECT COUNT(*) AS n FROM push_subscriptions').first<{ n: number }>();
+  return c.json({ ok: true, devices: row?.n ?? 0 }, 201);
+});
+
+admin.delete('/push/subscriptions', async (c) => {
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: 'Malformed request.' }, 400);
+  }
+  const endpoint = (body as { endpoint?: unknown } | null)?.endpoint;
+  if (typeof endpoint !== 'string') return c.json({ error: 'Missing endpoint.' }, 400);
+  await c.env.DB.prepare('DELETE FROM push_subscriptions WHERE endpoint = ?').bind(endpoint).run();
+  const row = await c.env.DB.prepare('SELECT COUNT(*) AS n FROM push_subscriptions').first<{ n: number }>();
+  return c.json({ ok: true, devices: row?.n ?? 0 });
+});
+
+/**
+ * A manifest just for the desk. iOS only delivers Web Push to a Home Screen
+ * app, and "Add to Home Screen" opens the manifest's start_url, so that URL
+ * carries the key: the saved app opens straight to a signed-in desk.
+ */
+admin.get('/manifest.webmanifest', (c) => {
+  const key = c.req.query('key') ?? c.req.header('x-admin-key') ?? '';
+  c.header('Content-Type', 'application/manifest+json');
+  return c.body(
+    JSON.stringify({
+      id: '/admin',
+      name: 'City Greens Desk',
+      short_name: 'CG Desk',
+      description: `Organizer desk for ${EVENT.name}: pledges, the goal, and a buzz for every gift.`,
+      start_url: `/#/admin/${encodeURIComponent(key)}`,
+      scope: '/',
+      display: 'standalone',
+      theme_color: '#285038',
+      background_color: '#285038',
+      icons: [
+        { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+        { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      ],
+    }),
+  );
+});
+
+/** "Did it work?" — one notification to every subscribed phone, right now. */
+admin.post('/push/test', async (c) => {
+  if (!pushConfigured(c.env)) return c.json({ error: 'Push is not set up: set the VAPID keys.' }, 503);
+  const report = await notifyOrganizers(c.env, testNotice());
+  return c.json(report);
 });
 
 app.route('/api/admin', admin);

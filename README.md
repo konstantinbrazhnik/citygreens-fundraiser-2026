@@ -23,6 +23,11 @@ real time.
 - **`/#/admin`** — the organizer's desk (needs the `ADMIN_KEY` secret): put a
   paddle raise or check on the board by hand, move the goal, count money raised
   elsewhere, hide a mistaken gift, export a CSV of every gift and subscriber.
+  **`/#/admin/<ADMIN_KEY>`** is the invite link (the desk has a Share button
+  for it): it signs the phone in, and once it is saved to the Home Screen it
+  can turn on **push notifications** for every gift. iPhones only get Web Push
+  from a Home Screen app, so the desk serves its own manifest whose start URL
+  carries the key.
 
 Everyone on `/` or `/#/donate` also sees a small "Maria G. just gave $100"
 toast when a gift lands, so the room feeds itself.
@@ -79,8 +84,18 @@ npx wrangler secret put SQUARE_APPLICATION_ID   # e.g. sq0idp-…
 npx wrangler secret put SQUARE_LOCATION_ID      # the location the gifts post to
 npx wrangler secret put ADMIN_KEY               # any long passphrase for #/admin
 
+node scripts/vapid-keys.mjs                     # organizer push notifications:
+#   → VAPID_PUBLIC_KEY goes in wrangler.jsonc, then
+printf '%s' '<VAPID_PRIVATE_KEY>' | npx wrangler secret put VAPID_PRIVATE_KEY
+
 npm run deploy      # tests → build → migrate remote D1 → wrangler deploy
 ```
+
+Push notifications go out from the Worker itself (RFC 8291 encryption and
+VAPID signing via `@block65/webcrypto-web-push`), one request per subscribed
+phone, on every gift, card or manual. Subscriptions the push service reports
+gone (404/410) are dropped automatically. Rotating the VAPID pair signs every
+phone out of notifications; they re-subscribe from the desk.
 
 `scripts/cloudflare-setup.sh` does the same steps interactively.
 

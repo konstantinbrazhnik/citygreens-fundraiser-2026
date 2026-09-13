@@ -10,6 +10,7 @@ describe('hash router', () => {
       { name: 'thanks', id: 'abc' },
       { name: 'board' },
       { name: 'admin' },
+      { name: 'admin', key: 'daa737c4' },
     ];
     for (const r of routes) expect(parseHash(toHash(r))).toEqual(r);
   });

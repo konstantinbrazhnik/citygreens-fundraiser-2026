@@ -10,7 +10,8 @@ export type Route =
   | { name: 'donate'; amountCents?: number }
   | { name: 'thanks'; id: string }
   | { name: 'board' }
-  | { name: 'admin' };
+  /** `key` is the organizer invite: #/admin/<ADMIN_KEY> signs in and is what a Home Screen app opens to. */
+  | { name: 'admin'; key?: string };
 
 export const DEFAULT_ROUTE: Route = { name: 'home' };
 
@@ -30,7 +31,7 @@ export function parseHash(hash: string): Route {
     case 'board':
       return { name: 'board' };
     case 'admin':
-      return { name: 'admin' };
+      return arg ? { name: 'admin', key: arg } : { name: 'admin' };
     default:
       return DEFAULT_ROUTE;
   }
@@ -47,7 +48,7 @@ export function toHash(route: Route): string {
     case 'board':
       return '#/board';
     case 'admin':
-      return '#/admin';
+      return route.key ? `#/admin/${encodeURIComponent(route.key)}` : '#/admin';
   }
 }
 

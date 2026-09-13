@@ -28,13 +28,19 @@
 		"MAILCHIMP_HOST": "stlcitygreens.us7.list-manage.com",
 		"MAILCHIMP_U": "b6e4af7b09c12584bd76a1bbe",
 		"MAILCHIMP_ID": "d4e031ba7d",
-		"MAILCHIMP_F_ID": "000aa7e4f0"
+		"MAILCHIMP_F_ID": "000aa7e4f0",
+		// Web Push for organizers (#/admin → Notifications). The public key is
+		// what a phone subscribes with; its private half is the VAPID_PRIVATE_KEY
+		// secret. Regenerate both together with scripts/vapid-keys.mjs.
+		"VAPID_PUBLIC_KEY": "BBxBYMQ_jciJH3Ut7jZf4wwORcmDqYYe_hAkVDK_vWNrUHECKaAxr7PqyPnkdKXyBc4Iq9_0zrICrHin_2MKc64",
+		"VAPID_SUBJECT": "https://www.stlcitygreens.org"
 	},
 	// Secrets (never in this file): `npx wrangler secret put <NAME>`
 	//   SQUARE_ACCESS_TOKEN   — Square API access token (production or sandbox)
 	//   SQUARE_APPLICATION_ID — Square application id (public, but set alongside)
 	//   SQUARE_LOCATION_ID    — Square location id to attribute payments to
 	//   ADMIN_KEY             — passphrase for #/admin (manual pledges, goal)
+	//   VAPID_PRIVATE_KEY     — pairs with the VAPID_PUBLIC_KEY var (organizer push)
 	"workers_dev": true,
 	"d1_databases": [
 		{

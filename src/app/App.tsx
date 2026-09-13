@@ -13,11 +13,12 @@ export function App() {
   const live = useLiveBoard();
 
   useEffect(() => {
-    document.title = route.name === 'board' ? "Growing City Greens '26 · Live Board" : "Growing City Greens '26 · Give";
+    document.title =
+      route.name === 'board' ? "Growing City Greens '26 · Live Board" : route.name === 'admin' ? 'City Greens Desk' : "Growing City Greens '26 · Give";
   }, [route.name]);
 
   if (route.name === 'board') return <Board live={live} />;
-  if (route.name === 'admin') return <Admin navigate={navigate} />;
+  if (route.name === 'admin') return <Admin navigate={navigate} urlKey={route.key ?? null} />;
 
   return (
     <div className="deco-bg min-h-dvh">

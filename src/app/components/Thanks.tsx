@@ -78,10 +78,7 @@ export function Thanks({ id, live, navigate }: { id: string; live: LiveBoard; na
               </a>
             )}
             <div className="mt-6 grid gap-3">
-              <button type="button" onClick={() => navigate({ name: 'board' })} className="btn btn-gold w-full">
-                Watch the live board
-              </button>
-              <button type="button" onClick={share} className="btn btn-outline w-full">
+              <button type="button" onClick={share} className="btn btn-gold w-full">
                 Share &amp; invite a friend
               </button>
               <button type="button" onClick={() => navigate({ name: 'donate' })} className="text-[1.05rem] font-extrabold text-cream/80 underline decoration-gold decoration-2 underline-offset-4">
