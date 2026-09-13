@@ -8,7 +8,15 @@ import { expect, test } from '@playwright/test';
 test('land, give, and see it on the board', async ({ page, context }) => {
   await page.goto('/');
   await expect(page.getByTestId('hero-title')).toBeVisible();
+  // One Donate button at a time: the bottom bar stays hidden while the
+  // hero's button is on screen and slides in once it is scrolled past.
+  await expect(page.getByTestId('hero-donate')).toBeVisible();
+  await expect(page.getByTestId('sticky-donate')).toBeHidden();
+  await page.getByTestId('hero-donate').evaluate((el) => el.scrollIntoView({ block: 'start' }));
+  await page.mouse.wheel(0, 400);
   await expect(page.getByTestId('sticky-donate')).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(page.getByTestId('sticky-donate')).toBeHidden();
 
   // Nothing with text on the landing page renders below 17px.
   const smallest = await page.evaluate(() => {

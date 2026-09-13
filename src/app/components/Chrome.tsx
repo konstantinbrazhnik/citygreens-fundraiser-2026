@@ -34,11 +34,23 @@ export function TopBar({ live, navigate, back }: { live: LiveBoard; navigate: (r
   );
 }
 
-export function StickyDonate({ navigate, label = 'Donate now' }: { navigate: (r: Route) => void; label?: string }) {
+/**
+ * The bottom-of-screen Donate bar. `visible={false}` slides it off-screen
+ * (and hides it from assistive tech) so it does not double up with a Donate
+ * button that is already on screen, e.g. the hero's.
+ */
+export function StickyDonate({ navigate, label = 'Donate now', visible = true }: { navigate: (r: Route) => void; label?: string; visible?: boolean }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 bg-gradient-to-t from-forest-deep via-forest-deep/95 to-transparent px-4 pt-6" style={{ paddingBottom: 'calc(0.9rem + var(--safe-bottom))' }}>
+    <div
+      className={`fixed inset-x-0 bottom-0 z-30 bg-gradient-to-t from-forest-deep via-forest-deep/95 to-transparent px-4 pt-6 transition-[transform,opacity,visibility] duration-300 ease-out motion-reduce:transition-none ${
+        visible ? 'visible translate-y-0 opacity-100' : 'invisible translate-y-full opacity-0'
+      }`}
+      style={{ paddingBottom: 'calc(0.9rem + var(--safe-bottom))' }}
+      aria-hidden={!visible}
+      data-testid="sticky-donate-bar"
+    >
       <div className="mx-auto max-w-2xl">
-        <button type="button" onClick={() => navigate({ name: 'donate' })} className="btn btn-gold w-full text-[1.5rem] anim-pulse-gold" data-testid="sticky-donate">
+        <button type="button" onClick={() => navigate({ name: 'donate' })} className="btn btn-gold w-full text-[1.5rem] anim-pulse-gold" data-testid="sticky-donate" tabIndex={visible ? 0 : -1}>
           💚 {label}
         </button>
       </div>

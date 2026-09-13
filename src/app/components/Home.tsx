@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { CAMPAIGN, EVENT, ORG } from '@shared/campaign';
 import { formatMoney, PRESETS, shortName } from '@shared/donations';
 import type { LiveBoard } from '../lib/live';
@@ -9,6 +10,17 @@ import { Progress } from './Progress';
 
 export function Home({ live, navigate }: { live: LiveBoard; navigate: (r: Route) => void }) {
   const s = live.snapshot;
+  const heroDonate = useRef<HTMLButtonElement>(null);
+  // The bottom bar only appears once the hero's Donate button has scrolled
+  // out of view, so there is never two Donate buttons on screen at once.
+  const [heroDonateOffscreen, setHeroDonateOffscreen] = useState(false);
+  useEffect(() => {
+    const el = heroDonate.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([entry]) => setHeroDonateOffscreen(!entry.isIntersecting), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   return (
     <>
       <TopBar live={live} navigate={navigate} />
@@ -28,7 +40,7 @@ export function Home({ live, navigate }: { live: LiveBoard; navigate: (r: Route)
         <p className="mt-3 text-[1.15rem] font-semibold text-cream/90">
           A neighborhood with no grocery store. A market that sells local food at cost. Tonight, we bring them together.
         </p>
-        <button type="button" onClick={() => navigate({ name: 'donate' })} className="btn btn-gold mt-6 w-full text-[1.5rem]" data-testid="hero-donate">
+        <button ref={heroDonate} type="button" onClick={() => navigate({ name: 'donate' })} className="btn btn-gold mt-6 w-full text-[1.5rem]" data-testid="hero-donate">
           💚 Donate now
         </button>
         <p className="mt-3 text-center text-[1rem] font-bold text-cream/80">Takes about a minute. Card, Apple Pay or Google Pay.</p>
@@ -143,7 +155,7 @@ export function Home({ live, navigate }: { live: LiveBoard; navigate: (r: Route)
       </Section>
 
       <Footer />
-      <StickyDonate navigate={navigate} />
+      <StickyDonate navigate={navigate} visible={heroDonateOffscreen} />
     </>
   );
 }
