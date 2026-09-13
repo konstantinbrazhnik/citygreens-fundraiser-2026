@@ -83,11 +83,13 @@ export function Admin({ navigate }: { navigate: (r: Route) => void }) {
   const [goal, setGoal] = useState('');
   const [offset, setOffset] = useState('');
   const [offsetLabel, setOffsetLabel] = useState('');
+  const [showTotal, setShowTotal] = useState(false);
   useEffect(() => {
     if (!settings) return;
     setGoal(String(settings.goalCents / 100));
     setOffset(String(settings.offsetCents / 100));
     setOffsetLabel(settings.offsetLabel);
+    setShowTotal(settings.showTotal);
   }, [settings]);
 
   const saveSettings = async (e: FormEvent) => {
@@ -99,6 +101,7 @@ export function Admin({ navigate }: { navigate: (r: Route) => void }) {
         goalCents: Math.round(Number(goal) * 100),
         offsetCents: Math.round(Number(offset || '0') * 100),
         offsetLabel,
+        showTotal,
       });
       setSettings(s);
     } catch (err) {
@@ -223,6 +226,15 @@ export function Admin({ navigate }: { navigate: (r: Route) => void }) {
               <input id="offset-label" className="field" placeholder="from tickets & sponsors" value={offsetLabel} onChange={(e) => setOffsetLabel(e.target.value)} />
             </div>
           </div>
+          <label className="mt-4 flex min-h-11 cursor-pointer items-center gap-3 text-[1.1rem] font-extrabold text-forest-deep">
+            <input type="checkbox" className="h-7 w-7 accent-leaf" checked={showTotal} onChange={(e) => setShowTotal(e.target.checked)} />
+            Show live total &amp; progress bar
+          </label>
+          <p className="mt-1 text-[0.95rem] font-semibold text-ink/70">
+            {showTotal
+              ? 'Visible on the top bar, home page, projector board and thank-you screen.'
+              : 'Hidden everywhere. Turn on once every pledge (including verbal ones from tonight) is entered, so the total is accurate.'}
+          </p>
           <button type="submit" className="btn btn-leaf mt-4 w-full" disabled={busy}>
             Save
           </button>

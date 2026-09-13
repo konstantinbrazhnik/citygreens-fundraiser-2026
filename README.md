@@ -8,7 +8,7 @@ A one-link donation PWA for City Greens Market's 2026 fundraiser
 scanned from a QR code or tapped from a text and to put every gift on a wall in
 real time.
 
-- **`/`** — land, read why (a grocery store for Bevo Mill), tap **Donate**.
+- **`/`** — land, read why (a grocery store for Dutchtown), tap **Donate**.
   Newsletter sign-up (Mailchimp, the same list as stlcitygreens.org) and a
   **Become a member** call to action are on the same page.
 - **`/#/donate`** — preset amounts with a tangible outcome on each ($25 = a year
@@ -105,7 +105,9 @@ Square notes:
 ## Content and branding
 
 Copy, facts and links live in `shared/campaign.ts` and the gift presets in
-`shared/donations.ts`. Colors come from the "Growing City Greens" poster
+`shared/donations.ts`. Voice and tone for all copy on the site is documented
+in [`docs/VOICE.md`](docs/VOICE.md) — check it before writing new copy.
+Colors come from the "Growing City Greens" poster
 (deep green `#285038`, gold `#d8a850`, cream `#fff8dd`) and the City Greens
 site theme (leaf `#558632`, peach `#e4a95b`). Fonts: Limelight for the deco
 wordmark, Outfit (variable) for everything else, both self-hosted in

@@ -20,7 +20,7 @@ const d = (id: string, amountCents: number): PublicDonation => ({
   createdAt: 'now',
   source: 'manual',
 });
-const settings = { goalCents: 100_000, offsetCents: 10_000, offsetLabel: 'tix' };
+const settings = { goalCents: 100_000, offsetCents: 10_000, offsetLabel: 'tix', showTotal: true };
 
 describe('snapshot folding', () => {
   it('adds, dedupes, caps, and tracks the largest', () => {

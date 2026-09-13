@@ -251,7 +251,7 @@ export function Donate({ live, navigate, presetCents }: { live: LiveBoard; navig
         <Section className="pt-6">
           <div ref={amountStep} className="scroll-mt-24" />
           <h1 className="text-[2rem] font-black leading-tight">Choose your gift</h1>
-          <p className="mt-1 text-[1.1rem] font-semibold text-cream/90">Every dollar goes toward opening City Greens in Bevo Mill.</p>
+          <p className="mt-1 text-[1.1rem] font-semibold text-cream/90">Every dollar goes toward opening City Greens in Dutchtown.</p>
 
           <div className="mt-5 grid grid-cols-2 gap-3" role="radiogroup" aria-label="Gift amount">
             {PRESETS.map((p) => {

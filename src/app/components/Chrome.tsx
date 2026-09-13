@@ -31,7 +31,7 @@ export function TopBar({ live, navigate, back, chip }: { live: LiveBoard; naviga
               <span className={`inline-block h-2.5 w-2.5 rounded-full ${live.connected ? 'bg-lime anim-pulse-gold' : 'bg-cream/50'}`} />
               Live
             </span>
-            <span className="block text-[1.05rem] font-black leading-none">{formatMoney(s.raisedCents)}</span>
+            {s.showTotal && <span className="block text-[1.05rem] font-black leading-none">{formatMoney(s.raisedCents)}</span>}
           </button>
         )}
       </div>

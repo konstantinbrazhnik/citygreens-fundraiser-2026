@@ -31,7 +31,7 @@ export function Board({ live }: { live: LiveBoard }) {
   const giveUrl = useMemo(() => `${location.origin}/`, []);
 
   useEffect(() => {
-    QRCode.toDataURL(giveUrl, { margin: 1, width: 600, color: { dark: '#141414', light: '#fff8dd' } })
+    QRCode.toDataURL(giveUrl, { margin: 1, width: 800, color: { dark: '#141414', light: '#fff8dd' } })
       .then(setQr)
       .catch(() => setQr(null));
   }, [giveUrl]);
@@ -50,20 +50,22 @@ export function Board({ live }: { live: LiveBoard }) {
         big: d.amountCents >= 50_000,
       },
     ];
-    const goal = s?.goalCents ?? 0;
-    const pct = milestoneCrossed(ev.beforeCents, ev.beforeCents + d.amountCents, goal);
-    if (pct !== null) {
-      items.push({
-        key: ev.seq * 10 + 1,
-        title: pct >= 100 ? '🎉 GOAL REACHED! 🎉' : `${pct}% of the way there!`,
-        sub: pct >= 100 ? 'Bevo Mill, here we come.' : `${formatMoney(Math.max(0, goal - (ev.beforeCents + d.amountCents)))} to go`,
-        big: true,
-      });
-      window.setTimeout(() => celebrateMilestone(pct), 400);
+    if (s?.showTotal) {
+      const goal = s.goalCents;
+      const pct = milestoneCrossed(ev.beforeCents, ev.beforeCents + d.amountCents, goal);
+      if (pct !== null) {
+        items.push({
+          key: ev.seq * 10 + 1,
+          title: pct >= 100 ? '🎉 GOAL REACHED! 🎉' : `${pct}% of the way there!`,
+          sub: pct >= 100 ? 'Dutchtown, here we come.' : `${formatMoney(Math.max(0, goal - (ev.beforeCents + d.amountCents)))} to go`,
+          big: true,
+        });
+        window.setTimeout(() => celebrateMilestone(pct), 400);
+      }
     }
     celebrateGift(d.amountCents, { x: 0.5, y: 0.45 });
     setQueue((q) => [...q, ...items]);
-  }, [live.latest, s?.goalCents]);
+  }, [live.latest, s?.goalCents, s?.showTotal]);
 
   /* One card at a time; shorter when the queue backs up. */
   useEffect(() => {
@@ -112,9 +114,15 @@ export function Board({ live }: { live: LiveBoard }) {
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between px-[4vw] pt-[2.5vh]">
         <div>
-          <p className="text-[clamp(1rem,1.8vw,1.8rem)] font-extrabold uppercase tracking-[0.25em] text-gold">{EVENT.dateLabel} · {EVENT.venue}</p>
-          <h1 className="font-display text-[clamp(2.2rem,6vw,6rem)] leading-none gold-text">Growing City Greens</h1>
-          <p className="mt-[0.5vh] text-[clamp(1.1rem,2.2vw,2.4rem)] font-black">Help open a grocery store in Bevo Mill.</p>
+          <p className="text-[clamp(1rem,1.8vw,1.8rem)] font-extrabold uppercase tracking-[0.25em] text-gold">{EVENT.dateLabel}</p>
+          <h1 className="font-display text-[clamp(2.2rem,6vw,6rem)] leading-none gold-text">
+            Growing
+            <br />
+            City
+            <br />
+            Greens
+          </h1>
+          <p className="mt-[0.5vh] text-[clamp(1.1rem,2.2vw,2.4rem)] font-black">Help expand food access for all!</p>
         </div>
         <button type="button" onClick={fullscreen} className="mr-[14vw] rounded-full bg-cream/10 px-4 py-2 text-[1rem] font-extrabold text-cream/70 opacity-0 transition hover:opacity-100 focus:opacity-100" aria-label="Toggle full screen">
           ⛶ Full screen
@@ -124,16 +132,17 @@ export function Board({ live }: { live: LiveBoard }) {
       {/* Body */}
       <div className="relative z-10 grid flex-1 grid-cols-[1fr_auto] gap-[3vw] px-[4vw] pb-[3vh] pt-[3vh]" style={{ paddingRight: 'calc(4vw + 14vw)' }}>
         <div className="flex min-w-0 flex-col">
-          {s ? (
-            <Progress raisedCents={s.raisedCents} goalCents={s.goalCents} count={s.count} size="xl" />
-          ) : (
-            <p className="text-[3vw] font-black text-cream/70">{live.offline ? 'Reconnecting…' : 'Warming up the board…'}</p>
+          {!s && <p className="text-[3vw] font-black text-cream/70">{live.offline ? 'Reconnecting…' : 'Warming up the board…'}</p>}
+          {s?.showTotal && (
+            <>
+              <Progress raisedCents={s.raisedCents} goalCents={s.goalCents} count={s.count} size="xl" />
+              {s.offsetCents ? (
+                <p className="mt-[1vh] text-[clamp(1rem,1.6vw,1.6rem)] font-bold text-cream/70">
+                  includes {formatMoney(s.offsetCents)} {s.offsetLabel || 'raised before tonight'}
+                </p>
+              ) : null}
+            </>
           )}
-          {s?.offsetCents ? (
-            <p className="mt-[1vh] text-[clamp(1rem,1.6vw,1.6rem)] font-bold text-cream/70">
-              includes {formatMoney(s.offsetCents)} {s.offsetLabel || 'raised before tonight'}
-            </p>
-          ) : null}
 
           {/* Feed */}
           <ul className="mt-[3vh] grid flex-1 auto-rows-min grid-cols-2 gap-[1.2vw] overflow-hidden" aria-label="Recent gifts">
@@ -159,13 +168,13 @@ export function Board({ live }: { live: LiveBoard }) {
         </div>
 
         {/* QR */}
-        <aside className="flex w-[clamp(180px,20vw,340px)] flex-col items-center justify-start">
+        <aside className="flex w-[clamp(220px,26vw,440px)] flex-col items-center justify-start">
           <div className="w-full rounded-[1.6vw] bg-cream p-[1vw] shadow-2xl ring-8 ring-gold">
             {qr ? <img src={qr} alt={`QR code for ${giveUrl}`} className="block w-full" /> : <div className="aspect-square w-full" />}
           </div>
           <p className="mt-[1.5vh] text-center text-[clamp(1.3rem,2.4vw,2.6rem)] font-black leading-tight">Scan to give</p>
           <p className="mt-[0.5vh] text-center text-[clamp(0.9rem,1.3vw,1.4rem)] font-bold text-gold break-all">{giveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}</p>
-          {s && (
+          {s?.showTotal && (
             <p className="mt-[2vh] text-center text-[clamp(1rem,1.5vw,1.6rem)] font-bold text-cream/80">
               {pct >= 100 ? 'We did it! 🎉' : `${formatMoney(Math.max(0, s.goalCents - s.raisedCents))} to go`}
             </p>

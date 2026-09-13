@@ -32,7 +32,7 @@ export function Thanks({ id, live, navigate }: { id: string; live: LiveBoard; na
   useEffect(() => setGift(findGift(id)), [id]);
 
   const share = async () => {
-    const text = `I just gave ${donation ? formatMoney(donation.amountCents) : ''} to help open City Greens Market in Bevo Mill. Join me: `;
+    const text = `I just gave ${donation ? formatMoney(donation.amountCents) : ''} to help open City Greens Market in Dutchtown. Join me: `;
     const url = `${location.origin}/`;
     if (navigator.share) {
       try {
@@ -92,7 +92,7 @@ export function Thanks({ id, live, navigate }: { id: string; live: LiveBoard; na
         )}
       </Section>
 
-      {s && (
+      {s?.showTotal && (
         <Section className="pt-8">
           <div className="rounded-3xl bg-forest-deep/70 p-5 ring-2 ring-gold/40">
             <Progress raisedCents={s.raisedCents} goalCents={s.goalCents} count={s.count} />

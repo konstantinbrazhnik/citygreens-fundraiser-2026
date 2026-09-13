@@ -33,16 +33,16 @@ export const EVENT = {
 
 /** The capital campaign this year: a second store. */
 export const CAMPAIGN = {
-  headline: 'Help open a grocery store in Bevo Mill.',
-  neighborhood: 'Bevo Mill',
+  headline: 'Help us continue to grow a community-powered food system in St. Louis.',
+  neighborhood: 'Dutchtown',
   /**
    * Short, true, and said the same way everywhere. Numbers come from the
    * 2025 annual report and the website's impact section.
    */
   story: [
-    'Bevo Mill is one of the densest neighborhoods in St. Louis, and it has no grocery store. Thousands of neighbors ride two buses to buy fresh food, or settle for whatever the corner store has.',
-    'City Greens Market has spent 17 years proving a different model works in The Grove: buy from local farmers at a fair price, sell it at cost to members, and let a sliding scale make room for everyone.',
-    'This year we are taking that model to South City. Every dollar raised tonight goes toward opening the doors of a second City Greens in Bevo Mill: shelves, coolers, a walk-in, and the first season of local food on them.',
+    'For the past 18 years, City Greens Market has made fresh, local food more accessible and affordable for families while supporting the farmers who grow it. We buy from local farmers at a fair price, sell food to our members at cost, and use a sliding membership scale so everyone can afford to buy groceries.',
+    'City Greens is working to bring fresh, affordable food to more St. Louis neighborhoods through online ordering and grocery delivery, while laying the groundwork for our expansion into Dutchtown.',
+    'Your support makes this possible.',
   ],
   proof: [
     { stat: '500+', label: 'households shop City Greens every week' },

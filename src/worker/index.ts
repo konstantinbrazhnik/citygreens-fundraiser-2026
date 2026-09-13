@@ -67,6 +67,10 @@ async function readSettings(env: Env): Promise<BoardSettings> {
     goalCents: Number(map.get('goal_cents') ?? (Number.isFinite(goalFromVar) && goalFromVar > 0 ? goalFromVar : DEFAULT_GOAL_CENTS)),
     offsetCents: Number(map.get('offset_cents') ?? 0),
     offsetLabel: map.get('offset_label') ?? '',
+    // Off by default: a partial total that can't capture verbal/off-app
+    // pledges reads as less money raised than reality, which is worse than
+    // showing no total. Organizers can flip it on from #/admin.
+    showTotal: map.get('show_total') === '1',
   };
 }
 
@@ -76,6 +80,7 @@ async function writeSettings(env: Env, s: BoardSettings): Promise<void> {
     stmt.bind('goal_cents', String(s.goalCents)),
     stmt.bind('offset_cents', String(s.offsetCents)),
     stmt.bind('offset_label', s.offsetLabel),
+    stmt.bind('show_total', s.showTotal ? '1' : '0'),
   ]);
 }
 

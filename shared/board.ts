@@ -5,6 +5,16 @@ export interface BoardSettings {
   /** Money raised elsewhere (tickets, sponsors, pledges on paper) that counts on the board. */
   offsetCents: number;
   offsetLabel: string;
+  /**
+   * Show the running total, goal progress bar, and milestone celebrations
+   * anywhere on the site (top bar, home page, projector board, thank-you
+   * screen). Off by default for events with a lot of verbal/off-app pledges
+   * that this total can't capture — a partial total reading lower than the
+   * real room total does more harm than showing no total at all. Individual
+   * named gifts (recent-gifts feed, per-gift toasts/celebrations) are not
+   * affected by this — only the aggregate figure.
+   */
+  showTotal: boolean;
 }
 
 export interface BoardSnapshot extends BoardSettings {
@@ -106,6 +116,10 @@ export function parseSettingsPatch(
   if (b.offsetLabel !== undefined) {
     if (typeof b.offsetLabel !== 'string' || b.offsetLabel.length > 60) return { ok: false, error: 'Label is too long.' };
     next.offsetLabel = b.offsetLabel.trim();
+  }
+  if (b.showTotal !== undefined) {
+    if (typeof b.showTotal !== 'boolean') return { ok: false, error: 'showTotal must be true or false.' };
+    next.showTotal = b.showTotal;
   }
   return { ok: true, value: next };
 }

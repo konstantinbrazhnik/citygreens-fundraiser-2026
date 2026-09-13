@@ -48,5 +48,8 @@ test('land, give, and see it on the board', async ({ page, context }) => {
 
   await expect(page.getByText(/Thank you, Playwright/)).toBeVisible();
   await expect(board.getByTestId('celebration')).toContainText('Playwright Donor just gave $100');
-  await expect(board.getByTestId('raised')).not.toHaveText('$0');
+  // The running total/progress bar is off by default (`showTotal`, flipped
+  // on from #/admin) — the per-gift celebration above is the signal that a
+  // gift landed, independent of whether the aggregate total is shown.
+  await expect(board.getByTestId('raised')).toHaveCount(0);
 });

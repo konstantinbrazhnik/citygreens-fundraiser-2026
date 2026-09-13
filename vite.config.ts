@@ -24,7 +24,7 @@ export default defineConfig({
       manifest: {
         name: 'Growing City Greens',
         short_name: 'City Greens',
-        description: "Give to open City Greens Market's new store in Bevo Mill.",
+        description: "Give to open City Greens Market's new store in Dutchtown.",
         theme_color: '#285038',
         background_color: '#285038',
         display: 'standalone',
