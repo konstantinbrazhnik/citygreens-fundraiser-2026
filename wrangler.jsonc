@@ -42,7 +42,7 @@
 			"database_name": "city-greens-fundraiser",
 			// Replace with the id printed by:
 			//   npx wrangler d1 create city-greens-fundraiser
-			"database_id": "00000000-0000-0000-0000-000000000000",
+			"database_id": "2b48baf2-eaf9-477b-8114-8699ceb36dce",
 			"migrations_dir": "migrations"
 		}
 	],
