@@ -1,0 +1,45 @@
+{
+  "name": "growing-city-greens",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "repository": { "type": "git", "url": "git+https://github.com/konstantinbrazhnik/citygreens-fundraiser-2026.git" },
+  "description": "Growing City Greens '26 — fund-the-need donation PWA with a live projector board. Cloudflare Workers + D1 + Durable Objects + Square.",
+  "scripts": {
+    "dev": "npm run build:app && wrangler dev",
+    "build:app": "vite build",
+    "build": "npm run test:ci && npm run build:app",
+    "typecheck": "wrangler types --strict-vars=false && tsc -p tsconfig.worker.json && tsc -p tsconfig.app.json",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:workers": "vitest run --config vitest.workers.config.ts",
+    "test:ci": "npm run typecheck && npm run test:unit && npm run test:workers",
+    "e2e": "playwright test",
+    "migrate:local": "wrangler d1 migrations apply city-greens-fundraiser --local",
+    "migrate:prod": "wrangler d1 migrations apply city-greens-fundraiser --remote",
+    "deploy": "npm install --no-fund --no-audit && npm run build && npm run migrate:prod && wrangler deploy"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.3",
+    "hono": "^4.13.1",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.20.3",
+    "@playwright/test": "^1.56.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^26.2.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1",
+    "vite-plugin-pwa": "^1.3.0",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.120.0"
+  }
+}

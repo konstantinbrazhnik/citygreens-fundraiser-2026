@@ -1,0 +1,212 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Limelight';
+  src: url('/fonts/limelight-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/outfit-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/*
+ * Palette: the deep green, gold and cream of the Growing City Greens '26
+ * poster, plus City Greens Market's own brand greens and peach from the
+ * website theme and the apple logo.
+ */
+@theme {
+  --font-display: 'Limelight', 'Outfit', ui-sans-serif, sans-serif;
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --color-forest: #285038;
+  --color-forest-deep: #1b3a28;
+  --color-moss: #385838;
+  --color-leaf: #558632;
+  --color-lime: #a6ce39;
+  --color-gold: #d8a850;
+  --color-gold-deep: #a07830;
+  --color-cream: #fff8dd;
+  --color-peach: #e4a95b;
+  --color-plum: #815697;
+  --color-ink: #141414;
+
+  --radius-2xl: 1.25rem;
+}
+
+/* Legibility is the brief: nothing on a phone renders below 18px. */
+html {
+  font-size: 18px;
+  -webkit-text-size-adjust: 100%;
+}
+@media (min-width: 640px) {
+  html { font-size: 20px; }
+}
+
+body {
+  background: var(--color-forest);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Art-deco diamond lattice from the poster, kept faint so text stays first. */
+.deco-bg {
+  background-color: var(--color-forest);
+  background-image:
+    repeating-linear-gradient(45deg, rgb(216 168 80 / 0.07) 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(-45deg, rgb(216 168 80 / 0.07) 0 1px, transparent 1px 34px);
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl font-extrabold tracking-wide select-none;
+  min-height: 3.5rem;
+  padding: 0.9rem 1.4rem;
+  font-size: 1.3rem;
+  line-height: 1.1;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.55; filter: grayscale(0.4); transform: none; }
+.btn-gold {
+  background: linear-gradient(180deg, #e6bb62, var(--color-gold) 55%, #c79a3f);
+  color: var(--color-ink);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.5);
+}
+.btn-cream {
+  background: var(--color-cream);
+  color: var(--color-forest-deep);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.25);
+}
+.btn-outline {
+  border: 3px solid var(--color-gold);
+  color: var(--color-cream);
+  background: transparent;
+}
+.btn-leaf {
+  background: var(--color-leaf);
+  color: white;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.25);
+}
+
+.card {
+  @apply rounded-3xl;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+}
+
+.field {
+  @apply w-full rounded-2xl border-[3px] px-4 py-3 font-semibold outline-none;
+  font-size: 1.15rem;
+  min-height: 3.4rem;
+  background: white;
+  color: var(--color-ink);
+  border-color: #c9d6bd;
+}
+.field:focus { border-color: var(--color-leaf); box-shadow: 0 0 0 4px rgb(85 134 50 / 0.2); }
+.field::placeholder { color: #7c8a72; font-weight: 500; }
+
+.label {
+  @apply block mb-2 font-extrabold;
+  font-size: 1.05rem;
+  color: var(--color-forest-deep);
+}
+
+.gold-text {
+  background: linear-gradient(180deg, #f2d27f, var(--color-gold) 60%, #b8893a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.progress {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.35);
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.4);
+}
+.progress > .bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-gold-deep), var(--color-gold), #f2d27f);
+  transition: width 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+}
+.progress > .bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 0.45) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { opacity: 1; transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(216 168 80 / 0.6); }
+  50% { box-shadow: 0 0 0 14px rgb(216 168 80 / 0); }
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-6deg); }
+  75% { transform: rotate(6deg); }
+}
+@keyframes ticker-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+.anim-slide-in { animation: slide-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.anim-pop { animation: pop 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.anim-rise { animation: rise 500ms ease-out both; }
+.anim-pulse-gold { animation: pulse-gold 2s ease-out infinite; }
+.anim-wiggle { animation: wiggle 900ms ease-in-out infinite; }
+.anim-ticker { animation: ticker-in 350ms ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-slide-in, .anim-pop, .anim-rise, .anim-pulse-gold, .anim-wiggle, .anim-ticker { animation: none; }
+  .progress > .bar::after { animation: none; }
+}
+
+/* Square's card iframe: the container gets the look, the iframe fills it. */
+#card-container { min-height: 3.6rem; }
+
+/* Apple Pay button per Apple's HIG; only rendered when the SDK says the device can. */
+.apple-pay-button {
+  -webkit-appearance: -apple-pay-button;
+  -apple-pay-button-type: donate;
+  -apple-pay-button-style: black;
+  width: 100%;
+  height: 3.5rem;
+  border-radius: 1rem;
+}
+
+.board-cursor-hidden { cursor: none; }

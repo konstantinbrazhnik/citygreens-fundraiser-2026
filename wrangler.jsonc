@@ -1,0 +1,55 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "city-greens-fundraiser",
+	"main": "src/worker/index.ts",
+	"compatibility_date": "2026-08-01",
+	"compatibility_flags": ["nodejs_compat"],
+	"assets": {
+		"directory": "dist/client",
+		"binding": "ASSETS",
+		"not_found_handling": "single-page-application",
+		"run_worker_first": ["/api/*"]
+	},
+	"vars": {
+		"ENVIRONMENT": "production",
+		// "square" charges real cards through the Square Payments API and needs
+		// the SQUARE_* secrets below. "simulated" accepts `sim-*` source ids and
+		// records the gift without charging anything — local dev and tests only.
+		"PAYMENTS_MODE": "square",
+		// "production" or "sandbox" — picks the Web Payments SDK script and the
+		// Square API host. Sandbox credentials only work with "sandbox".
+		"SQUARE_ENV": "production",
+		"SQUARE_VERSION": "2025-01-23",
+		// Fundraising goal shown on the board, in cents. Editable at runtime from
+		// the admin screen (#/admin); this is only the starting value.
+		"GOAL_CENTS": "10000000",
+		// Mailchimp embedded-form parameters, copied from stlcitygreens.org's
+		// newsletter page. Not secrets: they are in the public form markup.
+		"MAILCHIMP_HOST": "stlcitygreens.us7.list-manage.com",
+		"MAILCHIMP_U": "b6e4af7b09c12584bd76a1bbe",
+		"MAILCHIMP_ID": "d4e031ba7d",
+		"MAILCHIMP_F_ID": "000aa7e4f0"
+	},
+	// Secrets (never in this file): `npx wrangler secret put <NAME>`
+	//   SQUARE_ACCESS_TOKEN   — Square API access token (production or sandbox)
+	//   SQUARE_APPLICATION_ID — Square application id (public, but set alongside)
+	//   SQUARE_LOCATION_ID    — Square location id to attribute payments to
+	//   ADMIN_KEY             — passphrase for #/admin (manual pledges, goal)
+	"workers_dev": true,
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "city-greens-fundraiser",
+			// Replace with the id printed by:
+			//   npx wrangler d1 create city-greens-fundraiser
+			"database_id": "00000000-0000-0000-0000-000000000000",
+			"migrations_dir": "migrations"
+		}
+	],
+	"durable_objects": {
+		"bindings": [{ "name": "BOARD", "class_name": "DonationBoard" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["DonationBoard"] }],
+	"observability": { "enabled": true },
+	"dev": { "host": "127.0.0.1" }
+}
