@@ -37,7 +37,13 @@ test('land, give, and see it on the board', async ({ page, context }) => {
   await page.getByTestId('hero-donate').click();
   await expect(page.getByTestId('simulated-banner')).toBeVisible();
   await page.getByTestId('amount-10000').click();
+  // Picking an amount moves the cursor to the name field and pins the amount in the top bar.
+  await expect(page.getByTestId('donor-name')).toBeFocused();
+  await expect(page.getByTestId('gift-chip-amount')).toHaveText('$100');
   await page.getByTestId('donor-name').fill('Playwright Donor');
+  await page.getByTestId('donor-name').press('Enter');
+  await expect(page.getByTestId('simulated-banner')).toBeVisible(); // Enter advances, it does not submit
+  await expect(page.locator('#donor-message')).toBeFocused();
   await page.getByTestId('give').click();
 
   await expect(page.getByText(/Thank you, Playwright/)).toBeVisible();

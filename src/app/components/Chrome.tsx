@@ -4,7 +4,11 @@ import { formatMoney } from '@shared/donations';
 import type { LiveBoard } from '../lib/live';
 import type { Route } from '../lib/router';
 
-export function TopBar({ live, navigate, back }: { live: LiveBoard; navigate: (r: Route) => void; back?: Route }) {
+/**
+ * `chip` replaces the live-total pill on the right; the donate screen uses it
+ * to keep the chosen amount in view while the donor fills in the rest.
+ */
+export function TopBar({ live, navigate, back, chip }: { live: LiveBoard; navigate: (r: Route) => void; back?: Route; chip?: ReactNode }) {
   const s = live.snapshot;
   return (
     <header className="sticky top-0 z-30 bg-forest-deep/95 backdrop-blur" style={{ paddingTop: 'var(--safe-top)' }}>
@@ -20,7 +24,8 @@ export function TopBar({ live, navigate, back }: { live: LiveBoard; navigate: (r
             <span className="block text-[0.95rem] text-gold">{EVENT.name}</span>
           </span>
         </button>
-        {s && (
+        {chip}
+        {!chip && s && (
           <button type="button" onClick={() => navigate({ name: 'board' })} className="min-h-11 rounded-full bg-cream/10 px-3 py-1.5 text-right ring-2 ring-gold/50" aria-label="Open the live board">
             <span className="flex items-center justify-end gap-1.5 text-[0.9rem] font-extrabold uppercase tracking-wider text-gold">
               <span className={`inline-block h-2.5 w-2.5 rounded-full ${live.connected ? 'bg-lime anim-pulse-gold' : 'bg-cream/50'}`} />

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { formatMoney, MAX_CENTS, MAX_MESSAGE, MAX_NAME, MIN_CENTS, outcomeFor, parseAmountCents, PRESETS } from '@shared/donations';
 import { EVENT } from '@shared/campaign';
 import { ApiError, getConfig, postDonation, type AppConfig } from '../lib/api';
@@ -39,6 +39,30 @@ export function Donate({ live, navigate, presetCents }: { live: LiveBoard; navig
   const giftId = useRef(uuid());
   const cardHost = useRef<HTMLDivElement | null>(null);
   const googleHost = useRef<HTMLDivElement | null>(null);
+
+  /* The three steps of the form, for auto-advancing between them. */
+  const amountStep = useRef<HTMLDivElement | null>(null);
+  const detailsStep = useRef<HTMLDivElement | null>(null);
+  const paymentStep = useRef<HTMLDivElement | null>(null);
+  const nameField = useRef<HTMLInputElement | null>(null);
+  const messageField = useRef<HTMLInputElement | null>(null);
+  const emailField = useRef<HTMLInputElement | null>(null);
+
+  /** Scroll a step to the top of the screen and, optionally, put the cursor in its first field. */
+  const goTo = (step: HTMLElement | null, field?: HTMLInputElement | null) => {
+    if (!step) return;
+    const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    step.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+    field?.focus({ preventScroll: true });
+  };
+  const goToDetails = () => goTo(detailsStep.current, anonymous ? messageField.current : nameField.current);
+  const goToPayment = () => goTo(paymentStep.current);
+  /** Enter in a text field moves on instead of submitting the form. */
+  const nextOnEnter = (next: () => void) => (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    next();
+  };
 
   const preset = outcomeFor(amountCents);
   const amountOk = parseAmountCents(amountCents);
@@ -204,9 +228,28 @@ export function Donate({ live, navigate, presetCents }: { live: LiveBoard; navig
 
   return (
     <>
-      <TopBar live={live} navigate={navigate} back={{ name: 'home' }} />
+      <TopBar
+        live={live}
+        navigate={navigate}
+        back={{ name: 'home' }}
+        chip={
+          <button
+            type="button"
+            onClick={() => goTo(amountStep.current)}
+            className="min-h-11 rounded-full bg-gold px-3.5 py-1.5 text-right text-ink ring-2 ring-cream/70 shadow-lg"
+            aria-label={amountOk.ok ? `Your gift is ${formatMoney(amountCents)}. Change amount` : 'Choose an amount'}
+            data-testid="gift-chip"
+          >
+            <span className="block text-[0.8rem] font-extrabold uppercase tracking-wider text-ink/70">Your gift</span>
+            <span className="block text-[1.2rem] font-black leading-none" data-testid="gift-chip-amount">
+              {amountOk.ok ? formatMoney(amountCents) : '—'}
+            </span>
+          </button>
+        }
+      />
       <form onSubmit={onSubmitCard} className="pb-16">
         <Section className="pt-6">
+          <div ref={amountStep} className="scroll-mt-24" />
           <h1 className="text-[2rem] font-black leading-tight">Choose your gift</h1>
           <p className="mt-1 text-[1.1rem] font-semibold text-cream/90">Every dollar goes toward opening City Greens in Bevo Mill.</p>
 
@@ -224,6 +267,7 @@ export function Donate({ live, navigate, presetCents }: { live: LiveBoard; navig
                     setCustomOpen(false);
                     setCustom('');
                     setAmountCents(p.cents);
+                    goToDetails();
                   }}
                   className={`rounded-2xl p-3 text-left ring-4 transition active:scale-[0.98] ${
                     selected ? 'bg-gold text-ink ring-cream shadow-xl' : 'bg-cream/10 text-cream ring-transparent hover:ring-gold/40'
@@ -251,9 +295,11 @@ export function Donate({ live, navigate, presetCents }: { live: LiveBoard; navig
                     inputMode="decimal"
                     autoFocus
                     placeholder="0"
+                    enterKeyHint="next"
                     value={custom}
                     onChange={(e) => chooseCustom(e.target.value)}
                     onClick={(e) => e.stopPropagation()}
+                    onKeyDown={nextOnEnter(() => amountOk.ok && goToDetails())}
                     aria-label="Amount in dollars"
                   />
                 </span>
@@ -272,23 +318,29 @@ export function Donate({ live, navigate, presetCents }: { live: LiveBoard; navig
                 {amountCents > MAX_CENTS ? amountOk.error : `The minimum gift is ${formatMoney(MIN_CENTS)}.`}
               </p>
             )}
+            <button type="button" onClick={goToDetails} disabled={!amountOk.ok} className="btn btn-gold mt-4 w-full text-[1.2rem] disabled:opacity-50" data-testid="next-details">
+              Next: your name ↓
+            </button>
           </div>
         </Section>
 
         <Section className="pt-6">
-          <div className="card p-5">
+          <div ref={detailsStep} className="card scroll-mt-24 p-5">
             <label className="label" htmlFor="donor-name">
               Your name, for the board
             </label>
             <input
+              ref={nameField}
               id="donor-name"
               className="field"
               placeholder="Maria Gonzalez"
               autoComplete="name"
+              enterKeyHint="next"
               maxLength={MAX_NAME}
               value={name}
               disabled={anonymous}
               onChange={(e) => setName(e.target.value)}
+              onKeyDown={nextOnEnter(() => messageField.current?.focus())}
               data-testid="donor-name"
             />
             <label className="mt-4 flex min-h-11 cursor-pointer items-center gap-3 text-[1.1rem] font-extrabold text-forest-deep">
@@ -303,33 +355,42 @@ export function Donate({ live, navigate, presetCents }: { live: LiveBoard; navig
               A word for the wall <span className="font-semibold text-ink/60">(optional)</span>
             </label>
             <input
+              ref={messageField}
               id="donor-message"
               className="field"
               placeholder="For the Midtown Mamas 💚"
+              enterKeyHint="next"
               maxLength={MAX_MESSAGE}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={nextOnEnter(() => emailField.current?.focus())}
             />
 
             <label className="label mt-5" htmlFor="donor-email">
               Email for your receipt <span className="font-semibold text-ink/60">(optional)</span>
             </label>
             <input
+              ref={emailField}
               id="donor-email"
               className="field"
               type="email"
               inputMode="email"
               autoComplete="email"
+              enterKeyHint="next"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={nextOnEnter(goToPayment)}
               data-testid="donor-email"
             />
+            <button type="button" onClick={goToPayment} className="btn btn-leaf mt-5 w-full text-[1.2rem]" data-testid="next-payment">
+              Next: payment ↓
+            </button>
           </div>
         </Section>
 
         <Section className="pt-6">
-          <div className="card p-5">
+          <div ref={paymentStep} className="card scroll-mt-24 p-5">
             <h2 className="text-[1.4rem] font-black text-forest-deep">Payment</h2>
 
             {pay.kind === 'loading' && <p className="mt-3 text-[1.05rem] font-bold text-ink/70">Loading secure card form…</p>}
