@@ -18,7 +18,7 @@
 		"PAYMENTS_MODE": "square",
 		// "production" or "sandbox" — picks the Web Payments SDK script and the
 		// Square API host. Sandbox credentials only work with "sandbox".
-		"SQUARE_ENV": "production",
+		"SQUARE_ENV": "sandbox",
 		"SQUARE_VERSION": "2025-01-23",
 		// Fundraising goal shown on the board, in cents. Editable at runtime from
 		// the admin screen (#/admin); this is only the starting value.

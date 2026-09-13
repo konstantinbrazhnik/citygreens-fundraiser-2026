@@ -63,8 +63,10 @@ shows a "Test mode" banner). It is what the tests and a rehearsal use. Set
 ## Deploying to Cloudflare
 
 The Worker is deployed at https://city-greens-fundraiser.juris-pbc.workers.dev
-with the D1 database and `ADMIN_KEY` already in place; the `SQUARE_*` secrets
-are still to be set. The one-time setup, from a machine logged in to the
+with the D1 database, `ADMIN_KEY` and Square **sandbox** credentials in place
+(`SQUARE_ENV` is `sandbox`, so cards are not really charged). Going live means
+replacing the three `SQUARE_*` secrets with production ones and flipping
+`SQUARE_ENV` back to `production`. The one-time setup, from a machine logged in to the
 Cloudflare account (`npx wrangler login`, or `CLOUDFLARE_API_TOKEN` with
 Workers + D1 edit scopes), was:
 
