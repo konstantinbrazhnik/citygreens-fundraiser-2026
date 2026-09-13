@@ -16,8 +16,9 @@ export interface Preset {
 
 /**
  * Tangible outcomes. Each one is anchored to a real City Greens number: the
- * $25 and $50 membership tiers, the $10–25 Give-a-Bag gift cards, the 1:1
- * SNAP produce match. The two largest speak to the capital campaign.
+ * $25 membership tier for an unemployed household, the $10–25 Give-a-Bag
+ * gift cards, the 1:1 SNAP produce match. The two largest speak to the
+ * capital campaign.
  */
 export const PRESETS: readonly Preset[] = [
   {
@@ -29,20 +30,20 @@ export const PRESETS: readonly Preset[] = [
   {
     cents: 5_000,
     emoji: '🛒',
-    outcome: 'A year of at-cost groceries for a family earning under $30k',
-    detail: 'Covers the $50 membership tier: every trip 30% cheaper than non-member prices, all year.',
+    outcome: 'Two $25 grocery gift cards on the Give-a-Bag wall',
+    detail: 'A neighbor who is short this week takes one off the wall and puts it toward their groceries. No questions asked.',
   },
   {
     cents: 10_000,
     emoji: '🎁',
-    outcome: 'Four $25 gift cards on the Give-a-Bag wall',
-    detail: 'Anyone can take one toward their groceries, no questions asked.',
+    outcome: 'Four $25 grocery gift cards on the Give-a-Bag wall',
+    detail: 'Four neighbors get help with this week\'s groceries, straight from the wall by the register.',
   },
   {
     cents: 25_000,
     emoji: '🥕',
-    outcome: 'Doubles $250 of fresh produce bought with SNAP',
-    detail: 'City Greens matches SNAP produce dollars one-for-one. Your gift is the match.',
+    outcome: 'Doubles $250 of fruit and vegetables for neighbors shopping with SNAP',
+    detail: 'When a shopper pays for fruit and vegetables with SNAP, City Greens matches it dollar for dollar so they take home twice as much. Your gift funds that match.',
   },
   {
     cents: 50_000,
