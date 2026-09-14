@@ -4,7 +4,13 @@ import { useCallback, useEffect, useState } from 'react';
  * Hash routing: the fragment never reaches the Worker, so a reload of the
  * installed PWA (or a QR code deep link) lands on the same screen with no
  * server-side route config fighting the service worker's navigate fallback.
+ *
+ * One real path is the exception: `/admin?key=…`, the organizer invite. The
+ * Worker renders it with the desk's own web app manifest, which is the only
+ * way an iPhone "Add to Home Screen" ends up opening the desk (iOS reads the
+ * manifest the HTML shipped with, not one swapped in later).
  */
+export const ADMIN_PATH = '/admin';
 export type Route =
   | { name: 'home' }
   | { name: 'donate'; amountCents?: number }
@@ -37,6 +43,21 @@ export function parseHash(hash: string): Route {
   }
 }
 
+/** The whole location, not just the hash: a bare `/admin?key=…` is the desk. Any hash wins over the path. */
+export function parseLocation(loc: { pathname: string; search: string; hash: string }): Route {
+  if (loc.hash && loc.hash !== '#' && loc.hash !== '#/') return parseHash(loc.hash);
+  if (loc.pathname === ADMIN_PATH || loc.pathname === `${ADMIN_PATH}/`) {
+    const key = new URLSearchParams(loc.search).get('key');
+    return key ? { name: 'admin', key } : { name: 'admin' };
+  }
+  return parseHash(loc.hash);
+}
+
+/** The organizer invite link: opens signed in, installs as "CG Desk". */
+export function adminInviteUrl(origin: string, key: string): string {
+  return `${origin}${ADMIN_PATH}?key=${encodeURIComponent(key)}`;
+}
+
 export function toHash(route: Route): string {
   switch (route.name) {
     case 'home':
@@ -53,9 +74,9 @@ export function toHash(route: Route): string {
 }
 
 export function useRoute(): { route: Route; navigate: (route: Route, opts?: { replace?: boolean }) => void } {
-  const [route, setRoute] = useState<Route>(() => parseHash(location.hash));
+  const [route, setRoute] = useState<Route>(() => parseLocation(location));
   useEffect(() => {
-    const onChange = () => setRoute(parseHash(location.hash));
+    const onChange = () => setRoute(parseLocation(location));
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
   }, []);

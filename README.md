@@ -23,11 +23,12 @@ real time.
 - **`/#/admin`** — the organizer's desk (needs the `ADMIN_KEY` secret): put a
   paddle raise or check on the board by hand, move the goal, count money raised
   elsewhere, hide a mistaken gift, export a CSV of every gift and subscriber.
-  **`/#/admin/<ADMIN_KEY>`** is the invite link (the desk has a Share button
+  **`/admin?key=<ADMIN_KEY>`** is the invite link (the desk has a Share button
   for it): it signs the phone in, and once it is saved to the Home Screen it
   can turn on **push notifications** for every gift. iPhones only get Web Push
-  from a Home Screen app, so the desk serves its own manifest whose start URL
-  carries the key.
+  from a Home Screen app and open whatever the page's manifest says, so the
+  Worker renders `/admin` itself with a desk-specific manifest whose start URL
+  carries the key ("CG Desk" on the Home Screen).
 
 Everyone on `/` or `/#/donate` also sees a small "Maria G. just gave $100"
 toast when a gift lands, so the room feeds itself.

@@ -41,7 +41,8 @@ export default defineConfig({
         // Organizer push notifications: the handlers live in public/push-sw.js.
         importScripts: ['push-sw.js'],
         navigateFallback: 'index.html',
-        navigateFallbackDenylist: [/^\/api\//],
+        // /admin comes from the Worker, which bakes the desk's manifest into the HTML.
+        navigateFallbackDenylist: [/^\/api\//, /^\/admin\/?(\?|$)/],
         runtimeCaching: [
           {
             // The board totals: network first so a phone that opens the app

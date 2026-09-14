@@ -18,7 +18,7 @@ import {
   type AdminPushState,
 } from '../lib/api';
 import { currentSubscription, deviceLabel, isApple, permissionState, pushSupport, subscribePush, unsubscribePush } from '../lib/push';
-import { toHash, type Route } from '../lib/router';
+import { adminInviteUrl, type Route } from '../lib/router';
 
 /* localStorage, not session: a desk saved to the Home Screen must stay signed in. */
 const KEY_STORAGE = 'cg:admin-key';
@@ -82,6 +82,8 @@ export function Admin({ navigate, urlKey }: { navigate: (r: Route) => void; urlK
    * While signed in, this page presents itself as its own web app ("City
    * Greens Desk") whose start_url carries the key, so Add to Home Screen /
    * Install opens a signed-in desk that can receive push notifications.
+   * Chrome honours this swap; iOS does not, which is why the invite link is
+   * the Worker-rendered /admin?key=… page with the same manifest baked in.
    */
   useEffect(() => {
     if (!authed) return;
@@ -164,7 +166,7 @@ export function Admin({ navigate, urlKey }: { navigate: (r: Route) => void; urlK
   };
 
   /* invite link */
-  const inviteUrl = `${location.origin}/${toHash({ name: 'admin', key })}`;
+  const inviteUrl = adminInviteUrl(location.origin, key);
   const [copied, setCopied] = useState(false);
   const shareInvite = async () => {
     if (navigator.share) {
@@ -316,6 +318,14 @@ export function Admin({ navigate, urlKey }: { navigate: (r: Route) => void; urlK
             )}
             {support === 'needs-home-screen' && (
               <ol className="mt-2 list-decimal space-y-2 pl-5 text-[1.05rem] font-semibold text-ink/85">
+                {location.pathname !== '/admin' && (
+                  <li>
+                    <a href={inviteUrl} className="font-black underline decoration-2 underline-offset-2">
+                      Open the invite link
+                    </a>{' '}
+                    first (this page was reached another way).
+                  </li>
+                )}
                 <li>
                   Tap <span className="font-black">Share</span> (the box with the arrow) and choose <span className="font-black">Add to Home Screen</span>.
                 </li>

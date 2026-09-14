@@ -421,7 +421,7 @@ admin.get('/manifest.webmanifest', (c) => {
       name: 'City Greens Desk',
       short_name: 'CG Desk',
       description: `Organizer desk for ${EVENT.name}: pledges, the goal, and a buzz for every gift.`,
-      start_url: `/#/admin/${encodeURIComponent(key)}`,
+      start_url: `/admin?key=${encodeURIComponent(key)}`,
       scope: '/',
       display: 'standalone',
       theme_color: '#285038',
@@ -443,6 +443,26 @@ admin.post('/push/test', async (c) => {
 });
 
 app.route('/api/admin', admin);
+
+/**
+ * The organizer invite page. Same SPA, but the HTML links the desk's own
+ * manifest and title, because iOS decides what "Add to Home Screen" opens
+ * from the manifest the page loaded with. The key stays in the query string
+ * so the manifest's start_url can carry it; the app reads it from there.
+ */
+app.on('GET', ['/admin', '/admin/'], async (c) => {
+  const key = c.req.query('key') ?? '';
+  const res = await c.env.ASSETS.fetch(new Request(new URL('/index.html', c.req.url), { method: 'GET' }));
+  if (!res.ok) return c.text('Not found.', 404);
+  let html = await res.text();
+  if (key) {
+    html = html
+      .replace(/<link rel="manifest" href="[^"]*">/, `<link rel="manifest" href="/api/admin/manifest.webmanifest?key=${encodeURIComponent(key)}">`)
+      .replace(/<meta name="apple-mobile-web-app-title" content="[^"]*" \/>/, '<meta name="apple-mobile-web-app-title" content="CG Desk" />')
+      .replace(/<title>[^<]*<\/title>/, '<title>City Greens Desk</title>');
+  }
+  return c.html(html, 200, { 'Cache-Control': 'no-store' });
+});
 
 app.notFound((c) => (c.req.path.startsWith('/api/') ? c.json({ error: 'Not found.' }, 404) : c.env.ASSETS.fetch(c.req.raw)));
 

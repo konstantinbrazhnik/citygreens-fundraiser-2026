@@ -123,7 +123,21 @@ describe('organizer push', () => {
     expect(r.status).toBe(200);
     expect(r.headers.get('content-type')).toContain('application/manifest+json');
     const m = (await r.json()) as { id: string; start_url: string; name: string; display: string };
-    expect(m).toMatchObject({ id: '/admin', name: 'City Greens Desk', display: 'standalone', start_url: '/#/admin/test-admin-key' });
+    expect(m).toMatchObject({ id: '/admin', name: 'City Greens Desk', display: 'standalone', start_url: '/admin?key=test-admin-key' });
     expect((await SELF.fetch('https://cg.test/api/admin/manifest.webmanifest')).status).toBe(401);
+  });
+
+  it('renders /admin?key= with the desk manifest baked into the HTML', async () => {
+    const r = await SELF.fetch('https://cg.test/admin?key=test-admin-key');
+    // Needs a built app (dist/client). `npm run build` runs tests first, so allow that order.
+    if (r.status === 404) return;
+    expect(r.status).toBe(200);
+    expect(r.headers.get('cache-control')).toBe('no-store');
+    const html = await r.text();
+    expect(html).toContain('<link rel="manifest" href="/api/admin/manifest.webmanifest?key=test-admin-key">');
+    expect(html).toContain('content="CG Desk"');
+    expect(html).toContain('<title>City Greens Desk</title>');
+    const plain = await (await SELF.fetch('https://cg.test/admin')).text();
+    expect(plain).toContain('href="/manifest.webmanifest"');
   });
 });
