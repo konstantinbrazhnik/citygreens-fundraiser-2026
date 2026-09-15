@@ -132,3 +132,10 @@ asserts it.
 
 The fundraising goal defaults to $100,000 (the announced Growing City Greens
 goal) via `GOAL_CENTS`; change it live from `#/admin`.
+
+## Also in this repo
+
+[`timone/`](timone/README.md) — a small offline guide for Timone's dog sitter
+(routine, food and pills, who to call). It is a second, entirely separate
+Worker: static assets only, its own `wrangler.jsonc`, nothing shared with the
+fundraiser. `npm run timone:dev` / `npm run timone:deploy`.

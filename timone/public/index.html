@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timone · Sitter's Guide</title>
+<meta name="description" content="Timone's routine, food and pills, and who to call. Works offline.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#201f1c" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Timone">
+<link rel="icon" href="icons/favicon-48.png" sizes="48x48">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <img class="avatar" src="photo.jpg" alt="" width="80" height="80">
+    <div>
+      <p class="name">Timone</p>
+      <p class="kicker">Sitter&rsquo;s guide</p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ------------------------------------------------------------ routine -->
+  <div class="tab" id="routine" role="tabpanel" aria-labelledby="tab-routine">
+
+    <section class="card hero">
+      <img src="photo.jpg" alt="Timone, a grey pit bull, lying on the sidewalk in his harness" width="1125" height="844">
+      <div class="hero-words">
+        <p class="hello">Thanks for taking him this weekend, John. Everything is in these three tabs.</p>
+        <p class="tldr"><strong>The short version</strong> Walk him twice a day, feed him after each walk, and both pills go in the morning food.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+        His day
+      </h2>
+      <div class="rhythm">
+        <div class="half">
+          <h3>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/></svg>
+            Morning
+          </h3>
+          <ol class="steps">
+            <li>Walk</li>
+            <li>Breakfast &mdash; kibble + &frac12; can wet</li>
+            <li><strong>Both pills</strong>, in the wet food</li>
+          </ol>
+        </div>
+        <div class="half">
+          <h3>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+            Evening
+          </h3>
+          <ol class="steps">
+            <li>Walk</li>
+            <li>Dinner &mdash; kibble + &frac12; can wet</li>
+            <li><span class="muted">No pills at night</span></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <div class="checklist-head">
+          <h3>Today</h3>
+          <button type="button" id="reset" class="reset">Clear</button>
+        </div>
+        <label class="check"><input type="checkbox" data-task="am-walk"><span>Morning walk</span></label>
+        <label class="check"><input type="checkbox" data-task="am-food"><span>Breakfast + both pills</span></label>
+        <label class="check"><input type="checkbox" data-task="pm-walk"><span>Evening walk</span></label>
+        <label class="check"><input type="checkbox" data-task="pm-food"><span>Dinner</span></label>
+        <p class="note">Saved on this phone, and it starts fresh each morning.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8.2" cy="9" r="1.9"/><circle cx="12" cy="7.2" r="1.9"/><circle cx="15.8" cy="9" r="1.9"/><path d="M12 11.6c2.9 0 5.2 2.1 5.2 4.4 0 2-1.6 3.3-3.4 3.3-.8 0-1.2-.3-1.8-.3s-1 .3-1.8.3c-1.8 0-3.4-1.3-3.4-3.3 0-2.3 2.3-4.4 5.2-4.4z"/></svg>
+        Walks
+      </h2>
+      <p class="big">Twice a day, morning and evening. The meals follow the walks.</p>
+      <p class="big">He&rsquo;ll usually let you know when he&rsquo;s ready to go.</p>
+    </section>
+
+  </div>
+
+  <!-- ------------------------------------------------------- food and meds -->
+  <div class="tab" id="food" role="tabpanel" aria-labelledby="tab-food" hidden>
+
+    <section class="card">
+      <h2>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11h17a8.5 8.5 0 0 1-17 0z"/><path d="M6.5 7.5C6.5 6.1 9 5 12 5s5.5 1.1 5.5 2.5"/></svg>
+        Food
+      </h2>
+      <p class="big">Twice a day &mdash; after the morning walk and after the evening walk.</p>
+      <ul class="bullets">
+        <li>About <strong>one scoop</strong> of the Hill&rsquo;s Science Diet kibble</li>
+        <li><strong>Half a can</strong> of the Royal Canin wet food</li>
+      </ul>
+      <p class="flag">Once a can is open, the other half goes in the fridge until the next feeding.</p>
+    </section>
+
+    <section class="card">
+      <h2>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5"/><path d="M12 8.5v7"/></svg>
+        Pills
+      </h2>
+      <p class="tag">Morning only</p>
+      <ul class="pills">
+        <li>
+          <span class="pill-chip pill-white" aria-hidden="true"></span>
+          <span><strong>Half a white Ketoconazole</strong> tablet</span>
+        </li>
+        <li>
+          <span class="pill-chip pill-grey" aria-hidden="true"></span>
+          <span><strong>One Atopica</strong> &mdash; the long grey one</span>
+        </li>
+      </ul>
+      <p class="big">Both go in the morning meal. We hide them in the wet food and he takes them without noticing.</p>
+      <p class="flag">Nothing in the evening meal.</p>
+    </section>
+
+  </div>
+
+  <!-- ----------------------------------------------------------- contacts -->
+  <div class="tab" id="contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
+
+    <section class="card">
+      <h2>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.5 12 4.5l8.5 7"/><path d="M5.5 10.5v9h13v-9"/></svg>
+        Us
+      </h2>
+      <div class="person">
+        <div class="who-row">
+          <p class="who">Konstantin</p>
+          <a class="mini" href="sms:+15402506168">Text</a>
+        </div>
+        <a class="btn" href="tel:+15402506168">
+          <svg class="btn-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2z"/></svg>
+          (540) 250-6168
+        </a>
+      </div>
+      <div class="person">
+        <div class="who-row">
+          <p class="who">Kat</p>
+          <a class="mini" href="sms:+13148079551">Text</a>
+        </div>
+        <a class="btn" href="tel:+13148079551">
+          <svg class="btn-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2z"/></svg>
+          (314) 807-9551
+        </a>
+      </div>
+      <p class="note">Any hour, any question.</p>
+    </section>
+
+    <section class="card">
+      <h2>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></svg>
+        Vet
+      </h2>
+      <p class="vet-name">Banfield Pet Hospital</p>
+      <p class="big">4621 Chippewa Street</p>
+      <a class="btn" href="tel:+13147736700">
+        <svg class="btn-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2z"/></svg>
+        (314) 773-6700
+      </a>
+      <a class="btn btn-quiet" href="https://maps.apple.com/?q=Banfield+Pet+Hospital,+4621+Chippewa+Street,+St+Louis,+MO">
+        <svg class="btn-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        Open in Maps
+      </a>
+      <p class="flag">Open every day, and they can usually fit him in the same day you call.</p>
+      <p class="big">You&rsquo;re listed as a point of contact on his account, so you can take him in and they can talk to you about him.</p>
+      <p class="note">Posted hours: 9am&ndash;6pm Monday to Saturday, 9am&ndash;5pm Sunday.</p>
+    </section>
+
+    <section class="card">
+      <h2>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>
+        Keep it on your phone
+      </h2>
+      <p class="big"><strong>iPhone:</strong> Share <span class="key">&#x2934;</span> &rarr; Add to Home Screen.</p>
+      <p class="big"><strong>Android:</strong> menu <span class="key">&#8942;</span> &rarr; Install app.</p>
+      <p class="note" id="offline-state">Once it&rsquo;s saved, the whole guide works with no signal.</p>
+    </section>
+
+    <footer>
+      <p>Made for John &middot; Benton Park, St.&nbsp;Louis</p>
+    </footer>
+
+  </div>
+
+</main>
+
+<nav class="tabbar" role="tablist" aria-label="Sections">
+  <a href="#routine" id="tab-routine" role="tab" aria-controls="routine" aria-selected="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+    <span>Routine</span>
+  </a>
+  <a href="#food" id="tab-food" role="tab" aria-controls="food" aria-selected="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11h17a8.5 8.5 0 0 1-17 0z"/><path d="M6.5 7.5C6.5 6.1 9 5 12 5s5.5 1.1 5.5 2.5"/></svg>
+    <span>Food &amp; Meds</span>
+  </a>
+  <a href="#contacts" id="tab-contacts" role="tab" aria-controls="contacts" aria-selected="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2z"/></svg>
+    <span>Contacts</span>
+  </a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

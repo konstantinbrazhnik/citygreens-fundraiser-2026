@@ -19,7 +19,10 @@
     "e2e": "playwright test",
     "migrate:local": "wrangler d1 migrations apply city-greens-fundraiser --local",
     "migrate:prod": "wrangler d1 migrations apply city-greens-fundraiser --remote",
-    "deploy": "npm install --no-fund --no-audit && npm run build && npm run migrate:prod && wrangler deploy"
+    "deploy": "npm install --no-fund --no-audit && npm run build && npm run migrate:prod && wrangler deploy",
+    "timone:dev": "wrangler dev -c timone/wrangler.jsonc",
+    "timone:images": "node scripts/timone-photo.mjs",
+    "timone:deploy": "wrangler deploy -c timone/wrangler.jsonc"
   },
   "dependencies": {
     "@block65/webcrypto-web-push": "^2.0.0",
