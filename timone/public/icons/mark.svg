@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Timone">
+  <defs>
+    <!-- South-city brick: a red field with mortar courses, like the walls he naps against. -->
+    <pattern id="brick" width="128" height="72" patternUnits="userSpaceOnUse">
+      <rect width="128" height="72" fill="#9c3b2e"/>
+      <rect width="128" height="5" y="33" fill="#d3a089" opacity=".3"/>
+      <rect width="128" height="5" y="69" fill="#d3a089" opacity=".3"/>
+      <rect width="5" height="33" x="30" fill="#d3a089" opacity=".3"/>
+      <rect width="5" height="33" x="94" y="37" fill="#d3a089" opacity=".3"/>
+    </pattern>
+    <linearGradient id="coat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#727d88"/>
+      <stop offset="1" stop-color="#454d57"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#brick)"/>
+  <!-- the blue painted foundation course, and the sidewalk under it -->
+  <rect y="404" width="512" height="10" fill="#123a68"/>
+  <rect y="414" width="512" height="64" fill="#1c4f8b"/>
+  <rect y="478" width="512" height="34" fill="#cfc7b7"/>
+
+  <g>
+    <!-- rose ears: small, folded back and out, the way his sit -->
+    <path d="M156 162 98 118c-14 22-4 60 26 84 6-16 17-30 32-40z" fill="#49525c"/>
+    <path d="M124 202c-16-22-22-46-18-62" stroke="#39414a" stroke-width="7" stroke-linecap="round" fill="none" opacity=".6"/>
+    <path d="M356 162l58-44c14 22 4 60-26 84-6-16-17-30-32-40z" fill="#49525c"/>
+    <path d="M388 202c16-22 22-46 18-62" stroke="#39414a" stroke-width="7" stroke-linecap="round" fill="none" opacity=".6"/>
+
+    <!-- head: flat broad skull, wide cheeks, blocky jaw -->
+    <path d="M148 198c0-60 46-100 108-100s108 40 108 100c18 34 24 66 12 96-10 38-40 60-60 72-10 28-32 44-60 44s-50-16-60-44c-20-12-50-34-60-72-12-30-6-62 12-96z" fill="url(#coat)"/>
+
+    <!-- muzzle -->
+    <ellipse cx="256" cy="328" rx="86" ry="66" fill="#6b7681"/>
+
+    <!-- eyes, relaxed -->
+    <path d="M186 244c14-14 42-14 56 0-14 10-42 10-56 0z" fill="#1c2127"/>
+    <path d="M270 244c14-14 42-14 56 0-14 10-42 10-56 0z" fill="#1c2127"/>
+    <path d="M184 226c14-11 40-11 54-3" stroke="#98a1ac" stroke-width="8" stroke-linecap="round" fill="none" opacity=".4"/>
+    <path d="M274 223c14-8 40-8 54 3" stroke="#98a1ac" stroke-width="8" stroke-linecap="round" fill="none" opacity=".4"/>
+
+    <!-- nose -->
+    <path d="M256 268c26 0 42 14 42 28 0 13-19 24-42 24s-42-11-42-24c0-14 16-28 42-28z" fill="#1c2127"/>
+    <path d="M238 288c4-5 10-5 13 0M261 288c3-5 9-5 13 0" stroke="#59616b" stroke-width="6" stroke-linecap="round" fill="none"/>
+
+    <!-- the smile -->
+    <path d="M196 336c18-7 102-7 120 0 6 36-20 66-60 66s-66-30-60-66z" fill="#27191d"/>
+    <path d="M198 336c20-6 96-6 116 0l-2 11c-22-6-90-6-112 0z" fill="#fdf8ef"/>
+    <path d="M226 362c0-8 60-8 60 0 0 24-14 38-30 38s-30-14-30-38z" fill="#d6848f"/>
+    <path d="M256 366v30" stroke="#b96b77" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

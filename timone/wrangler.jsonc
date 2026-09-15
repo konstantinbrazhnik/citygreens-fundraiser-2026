@@ -1,0 +1,14 @@
+{
+	"$schema": "../node_modules/wrangler/config-schema.json",
+	// A second, entirely separate Worker from the fundraiser in this repo:
+	// static assets only, no code, no bindings, nothing shared.
+	"name": "timone",
+	"compatibility_date": "2026-08-01",
+	"assets": {
+		"directory": "./public",
+		// One page: anything else lands on the guide rather than a 404.
+		"not_found_handling": "single-page-application"
+	},
+	"workers_dev": true,
+	"observability": { "enabled": true }
+}
