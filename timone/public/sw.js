@@ -3,22 +3,20 @@
    opens in a basement, in a park, or with the phone in airplane mode. When
    there is signal, each visit quietly refreshes the copy in the cache. */
 
-var VERSION = 'timone-v1';
+var VERSION = 'timone-v2';
 
 var CORE = [
   './',
   'app.css',
   'app.js',
   'manifest.webmanifest',
+  'photo.jpg',
   'fonts/outfit-latin.woff2',
-  'fonts/limelight-latin.woff2',
-  'icons/mark.svg',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/icon-maskable-512.png',
   'icons/apple-touch-icon.png',
   'icons/favicon-48.png',
-  // photo.jpg is optional, so it is cached on first sight instead of here.
 ];
 
 /* Cloudflare hands these files over gzipped, and by the time a fetch resolves

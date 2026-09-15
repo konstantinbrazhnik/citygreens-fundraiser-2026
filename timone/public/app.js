@@ -105,22 +105,6 @@
     if (!document.hidden) paint();
   });
 
-  /* ------------------------------------------------------- his portrait --
-     photo.jpg is optional: drop one next to this file and it replaces the
-     drawn mark everywhere the portrait shows. */
-
-  var portrait = document.getElementById('portrait-img');
-  if (portrait && window.fetch) {
-    // On a one-page site a missing file answers with the page itself, so the
-    // content type is what says whether a real photo is there.
-    fetch('photo.jpg')
-      .then(function (res) {
-        var type = res.headers.get('content-type') || '';
-        if (res.ok && type.indexOf('image/') === 0) portrait.src = 'photo.jpg';
-      })
-      .catch(function () {});
-  }
-
   /* -------------------------------------------------------------- offline */
 
   var state = document.getElementById('offline-state');

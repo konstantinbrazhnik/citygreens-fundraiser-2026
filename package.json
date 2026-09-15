@@ -21,7 +21,7 @@
     "migrate:prod": "wrangler d1 migrations apply city-greens-fundraiser --remote",
     "deploy": "npm install --no-fund --no-audit && npm run build && npm run migrate:prod && wrangler deploy",
     "timone:dev": "wrangler dev -c timone/wrangler.jsonc",
-    "timone:icons": "node scripts/timone-icons.mjs",
+    "timone:images": "node scripts/timone-photo.mjs",
     "timone:deploy": "wrangler deploy -c timone/wrangler.jsonc"
   },
   "dependencies": {

@@ -1,18 +1,17 @@
 {
   "name": "Timone · Sitter's Guide",
   "short_name": "Timone",
-  "description": "Food, pills, walks, vet and numbers for Timone. Works offline.",
+  "description": "Timone's routine, food and pills, and who to call. Works offline.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f6efe1",
-  "theme_color": "#9c3b2e",
+  "background_color": "#f4f3f0",
+  "theme_color": "#ffffff",
   "lang": "en-US",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/mark.svg", "sizes": "any", "type": "image/svg+xml" }
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
